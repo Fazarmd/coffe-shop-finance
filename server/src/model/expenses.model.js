@@ -1,4 +1,5 @@
 import db from "../db/db.js";
+import moment from "moment-timezone";
 import { v4 } from "uuid";
 
 class ExpensesModels {
@@ -8,7 +9,7 @@ class ExpensesModels {
       id: v4(),
       expense_type,
       amount,
-      expense_date: new Date(),
+      expense_date: moment().tz("Asia/Jakarta").format(),
       description,
     };
     return await db.insert(newExpenses).into("expenses").returning("*"); //.returning

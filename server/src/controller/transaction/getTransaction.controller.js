@@ -3,12 +3,19 @@ import TransactionModels from "../../model/transaction.model.js";
 
 const models = new TransactionModels();
 
-async function getTransaction(_, res) {
+async function getTransaction(req, res) {
   try {
-    const transaction = await models.findAll();
+    const page = req.query.page || 1;
+    const itemsPerPage = req.query.itemsPerPage || 10;
+    const offset = (page - 1) * itemsPerPage;
+
+    const transaction = await models.findAll(itemsPerPage, offset);
+
+    const total = await models.count(); // Panggil fungsi count()
+
     const data = {
       transaction,
-      total: transaction.length,
+      total,
     };
 
     return res.status(200).json(responseOk("Success get all transaction", data));

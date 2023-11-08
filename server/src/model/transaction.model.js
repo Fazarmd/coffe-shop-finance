@@ -1,4 +1,5 @@
 import db from "../db/db.js";
+import moment from "moment-timezone";
 import { v4 } from "uuid";
 
 class TransactionModels {
@@ -8,7 +9,7 @@ class TransactionModels {
       id: v4(),
       item_id,
       quantity,
-      transaction_date: new Date(),
+      transaction_date: moment().tz("Asia/Jakarta").format(),
       total_price,
     };
     return await db.insert(newTransaction).into("transaction").returning("*"); //.returning
@@ -19,11 +20,19 @@ class TransactionModels {
     return await db.select("price").from("items").where("id", item_id).first();
   }
 
-  //Get all
-  async findAll() {
-    const query = await db.select("*").table("transaction");
+  async findAll(limit, offset) {
+    const query = await db.select("transaction.*", "items.name as item_name").from("transaction").join("items", "transaction.item_id", "items.id").limit(limit).offset(offset);
     return query;
-    // return this.recipesData;
+  }
+
+  async count() {
+    const count = await db("transaction").count("* as total");
+    return count[0].total;
+  }
+
+  async findAllItem() {
+    const query = await db.select("*").table("items");
+    return query;
   }
 
   //Get getById

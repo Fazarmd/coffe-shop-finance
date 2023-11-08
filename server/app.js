@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
+import moment from "moment-timezone";
 
 dotenv.config();
 const app = express();
@@ -11,7 +12,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(morgan("dev"));
 const PORT = process.env.PORT || 9000;
-const date = new Date();
+const date = moment().tz("Asia/Jakarta").format();
 // app.get("/ping", (req, res) => {
 //   res.status(200).json({
 //     PING: "PONG",

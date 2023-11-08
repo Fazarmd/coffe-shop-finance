@@ -1,0 +1,9 @@
+{
+  "name": "coffe-shop-finance",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Fazarmd/coffe-shop-finance.git",
+  "author": "Fazarmd <mfazarmd@gmail.com>",
+  "license": "MIT",
+  "dependencies": {}
+}
