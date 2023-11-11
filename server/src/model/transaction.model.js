@@ -20,19 +20,28 @@ class TransactionModels {
     return await db.select("price").from("items").where("id", item_id).first();
   }
 
-  async findAll(limit, offset) {
-    const query = await db
+  async findAll(limit, offset, date) {
+    let query = db
       .select("transaction.*", "items.name as item_name")
       .from("transaction")
       .join("items", "transaction.item_id", "items.id")
       .orderBy("transaction_date", "desc") // Menambahkan fungsi orderBy
       .limit(limit)
       .offset(offset);
-    return query;
+
+    if (date) {
+      query = query.whereRaw("DATE(transaction_date) = ?", [date]);
+    }
+
+    return await query;
   }
 
-  async count() {
-    const count = await db("transaction").count("* as total");
+  async count(date) {
+    let query = db("transaction").count("* as total");
+    if (date) {
+      query = query.whereRaw("DATE(transaction_date) = ?", [date]);
+    }
+    const count = await query;
     return count[0].total;
   }
 

@@ -8,6 +8,7 @@ const Transaction = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalTransactions, setTotalTransactions] = useState(0);
   const [transactionsPerPage] = useState(10);
+  const [selectedDate, setSelectedDate] = useState(null); // State baru untuk tanggal yang dipilih
 
   useEffect(() => {
     // Ganti dengan URL API Anda
@@ -23,9 +24,14 @@ const Transaction = () => {
       });
   }, []);
 
-  const loadTransactions = () => {
+  const loadTransactions = (date) => {
+    let url = `http://localhost:9000/api/v1/transaction?page=${currentPage}&itemsPerPage=${transactionsPerPage}&sort=transaction_date,desc`;
+    if (date) {
+      url += `&date=${date}`;
+    }
+
     axios
-      .get(`http://localhost:9000/api/v1/transaction?page=${currentPage}&itemsPerPage=${transactionsPerPage}&sort=transaction_date,desc`)
+      .get(url)
       .then((res) => {
         console.log(res.data.data.transaction);
         setTransactions(res.data.data.transaction); // Set transactions state with new data
@@ -43,6 +49,12 @@ const Transaction = () => {
 
   const handleChange = (e) => {
     setTransaction({ ...transaction, [e.target.name]: e.target.value });
+  };
+
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
+    setCurrentPage(1); // Set currentPage back to 1
+    loadTransactions(e.target.value);
   };
 
   const handleSubmit = (e) => {
@@ -96,6 +108,9 @@ const Transaction = () => {
         </button>
       </form>
       <div className="flex justify-center">
+        <input type="date" onChange={handleDateChange} className="border border-black p-2 rounded mr-2 bg-gray-200" />
+      </div>
+      <div className="flex justify-center">
         <table className="table-auto bg-white p-4 rounded-lg shadow-sm w-full md:w-3/4 lg:w-1/2">
           <thead>
             <tr>
@@ -107,6 +122,7 @@ const Transaction = () => {
           </thead>
           <tbody>
             {transactions
+              .filter((trans) => !selectedDate || trans.transaction_date.split("T")[0] === selectedDate)
               .slice()
               .sort((a, b) => new Date(b.transaction_date) - new Date(a.transaction_date))
               .map((trans) => (
