@@ -21,7 +21,13 @@ class TransactionModels {
   }
 
   async findAll(limit, offset) {
-    const query = await db.select("transaction.*", "items.name as item_name").from("transaction").join("items", "transaction.item_id", "items.id").limit(limit).offset(offset);
+    const query = await db
+      .select("transaction.*", "items.name as item_name")
+      .from("transaction")
+      .join("items", "transaction.item_id", "items.id")
+      .orderBy("transaction_date", "desc") // Menambahkan fungsi orderBy
+      .limit(limit)
+      .offset(offset);
     return query;
   }
 

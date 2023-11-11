@@ -23,9 +23,9 @@ const Transaction = () => {
       });
   }, []);
 
-  useEffect(() => {
+  const loadTransactions = () => {
     axios
-      .get(`http://localhost:9000/api/v1/transaction?page=${currentPage}&itemsPerPage=${transactionsPerPage}`)
+      .get(`http://localhost:9000/api/v1/transaction?page=${currentPage}&itemsPerPage=${transactionsPerPage}&sort=transaction_date,desc`)
       .then((res) => {
         console.log(res.data.data.transaction);
         setTransactions(res.data.data.transaction); // Set transactions state with new data
@@ -35,6 +35,10 @@ const Transaction = () => {
         console.error(err);
         alert("Terjadi kesalahan saat memuat data. Silakan coba lagi.");
       });
+  };
+
+  useEffect(() => {
+    loadTransactions();
   }, [currentPage]); // Add currentPage as a dependency
 
   const handleChange = (e) => {
@@ -48,7 +52,7 @@ const Transaction = () => {
       .post("http://localhost:9000/api/v1/transaction/add", transaction)
       .then((res) => {
         console.log(res.data);
-        setTransactions([...transactions, res.data]); // Tambahkan data transaksi baru ke state transactions
+        loadTransactions(); // Reload transactions after a new one is added
         setTransaction({ item_id: "", quantity: "" });
       })
       .catch((err) => {
@@ -71,10 +75,14 @@ const Transaction = () => {
   });
 
   return (
-    <div className="container mx-auto px-4">
-      <h1 className="text-2xl font-semibold mb-4">Dashboard</h1>
-      <form onSubmit={handleSubmit} className="mb-4">
-        <select name="item_id" onChange={handleChange} className="border p-2 rounded mr-2">
+    <div className="container mx-auto px-4 bg-[#ffffff] p-6 rounded-lg shadow-md text-black">
+      <nav className="flex items-center justify-between flex-wrap bg-[#0e0e0e] p-6 mb-6 rounded-lg shadow-sm">
+        <div className="flex items-center flex-shrink-0 text-white mr-6">
+          <span className="font-semibold text-xl tracking-tight">Transaction</span>
+        </div>
+      </nav>
+      <form onSubmit={handleSubmit} className="mb-6 bg-white p-4 rounded-lg shadow-sm flex justify-center">
+        <select name="item_id" onChange={handleChange} className="border border-black p-2 rounded mr-2 bg-gray-200" value={transaction.item_id}>
           <option>Pilih Item</option>
           {items.map((item) => (
             <option key={item.id} value={item.id}>
@@ -82,31 +90,37 @@ const Transaction = () => {
             </option>
           ))}
         </select>
-        <input type="number" name="quantity" onChange={handleChange} placeholder="Quantity" className="border p-2 rounded mr-2" />
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+        <input type="number" name="quantity" onChange={handleChange} placeholder="Quantity" className="border border-black p-2 rounded mr-2 bg-gray-200" value={transaction.quantity} />
+        <button type="submit" className="bg-black hover:bg-gray-800 text-white p-2 rounded">
           Submit
         </button>
       </form>
-      <table className="table-auto">
-        <thead>
-          <tr>
-            <th className="px-4 py-2">Name</th>
-            <th className="px-4 py-2">Quantity</th>
-            <th className="px-4 py-2">Price</th>
-            <th className="px-4 py-2">Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((trans) => (
-            <tr key={trans.id}>
-              <td className="border px-4 py-2">{trans.item_name}</td>
-              <td className="border px-4 py-2">{trans.quantity}</td>
-              <td className="border px-4 py-2">{trans.total_price}</td>
-              <td className="border px-4 py-2">{new Date(trans.transaction_date).toLocaleDateString().split("-").reverse().join("/")}</td>
+      <div className="flex justify-center">
+        <table className="table-auto bg-white p-4 rounded-lg shadow-sm w-full md:w-3/4 lg:w-1/2">
+          <thead>
+            <tr>
+              <th className="w-1 px-4 py-2 text-black text-center">Name</th>
+              <th className="w-1 px-4 py-2 text-black text-center">Quantity</th>
+              <th className="w-1 px-4 py-2 text-black text-center">Price</th>
+              <th className="w-1 px-4 py-2 text-black text-center">Date</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {transactions
+              .slice()
+              .sort((a, b) => new Date(b.transaction_date) - new Date(a.transaction_date))
+              .map((trans) => (
+                <tr key={trans.id}>
+                  <td className="border w-1/4 px-4 py-2 text-center">{trans.item_name}</td>
+                  <td className="border w-1/4 px-4 py-2 text-center">{trans.quantity}</td>
+                  <td className="border w-1/4 px-4 py-2 text-center">{trans.total_price}</td>
+                  <td className="border w-1/4 px-4 py-2 text-center">{new Date(trans.transaction_date).toLocaleDateString("id-ID")}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+
       <ul id="page-numbers" className="flex justify-center mt-4">
         {renderPageNumbers}
       </ul>
