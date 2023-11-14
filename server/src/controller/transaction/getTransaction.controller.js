@@ -7,12 +7,13 @@ async function getTransaction(req, res) {
   try {
     const page = req.query.page || 1;
     const itemsPerPage = req.query.itemsPerPage || 10;
-    const date = req.query.date; // Tambahkan ini
+    const startDate = req.query.startDate; // Tambahkan ini
+    const endDate = req.query.endDate; // Tambahkan ini
     const offset = (page - 1) * itemsPerPage;
 
-    const transaction = await models.findAll(itemsPerPage, offset, date); // Tambahkan date sebagai parameter
+    const transaction = await models.findAll(itemsPerPage, offset, startDate, endDate); // Tambahkan startDate dan endDate sebagai parameter
 
-    const total = await models.count(date); // Tambahkan date sebagai parameter
+    const total = await models.count(startDate, endDate); // Tambahkan startDate dan endDate sebagai parameter
 
     const data = {
       transaction,

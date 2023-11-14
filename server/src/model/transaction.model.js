@@ -20,7 +20,7 @@ class TransactionModels {
     return await db.select("price").from("items").where("id", item_id).first();
   }
 
-  async findAll(limit, offset, date) {
+  async findAll(limit, offset, startDate, endDate) {
     let query = db
       .select("transaction.*", "items.name as item_name")
       .from("transaction")
@@ -29,17 +29,17 @@ class TransactionModels {
       .limit(limit)
       .offset(offset);
 
-    if (date) {
-      query = query.whereRaw("DATE(transaction_date) = ?", [date]);
+    if (startDate && endDate) {
+      query = query.whereBetween("transaction_date", [startDate, endDate]);
     }
 
     return await query;
   }
 
-  async count(date) {
+  async count(startDate, endDate) {
     let query = db("transaction").count("* as total");
-    if (date) {
-      query = query.whereRaw("DATE(transaction_date) = ?", [date]);
+    if (startDate && endDate) {
+      query = query.whereBetween("transaction_date", [startDate, endDate]);
     }
     const count = await query;
     return count[0].total;
