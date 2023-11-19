@@ -7,11 +7,12 @@ import Transaction from "./pages/transaction-page/Transaction.jsx";
 import App from "./App.jsx";
 import "./index.css";
 import Button from "./components/button/Button.jsx";
+import Expense from "./pages/expense-page/Expense.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <Transaction />
+      <App />
     </BrowserRouter>
   </React.StrictMode>
 );

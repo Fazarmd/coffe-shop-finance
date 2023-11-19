@@ -18,7 +18,7 @@ const Transaction = () => {
       return res.data.data;
     } catch (err) {
       console.error(err);
-      alert("Terjadi kesalahan saat memuat data. Silakan coba lagi.");
+      // alert("Terjadi kesalahan saat memuat data. Silakan coba lagi.");
     }
   };
 

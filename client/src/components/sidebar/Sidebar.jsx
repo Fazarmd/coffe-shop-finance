@@ -7,7 +7,7 @@ const Sidebar = () => {
   const menus = [
     { name: "Revenue", link: "/", icon: TbReport },
     { name: "Transaction", link: "/transactions", icon: TbReplace },
-    { name: "Expenses", link: "/", icon: TbReportMoney },
+    { name: "Expenses", link: "/expenses", icon: TbReportMoney },
     { name: "Analysis", link: "/", icon: TbReportAnalytics },
     { name: "Logout", link: "/", icon: TbLogout, margin: true },
   ];
