@@ -3,7 +3,8 @@ import axios from "axios";
 
 const Transaction = () => {
   const [items, setItems] = useState([]);
-  const [transaction, setTransaction] = useState({ item_id: "", quantity: "" });
+  // const [transaction, setTransaction] = useState({ item_id: "", quantity: "" });
+  const [transaction, setTransaction] = useState({ item_id: "", quantity: "", transaction_date: "" });
   const [transactions, setTransactions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalTransactions, setTotalTransactions] = useState(0);
@@ -69,7 +70,8 @@ const Transaction = () => {
     try {
       await axios.post("http://localhost:9000/api/v1/transaction/add", transaction);
       loadTransactions();
-      setTransaction({ item_id: "", quantity: "" });
+      // setTransaction({ item_id: "", quantity: "" });
+      setTransaction({ item_id: "", quantity: "", transaction_date: "" });
     } catch (err) {
       console.error(err);
       alert("Terjadi kesalahan saat mengirim data. Silakan coba lagi.");
@@ -81,11 +83,30 @@ const Transaction = () => {
     pageNumbers.push(i);
   }
 
-  const renderPageNumbers = pageNumbers.map((number) => (
-    <li key={number} id={number} onClick={() => setCurrentPage(number)} className="inline-block px-3 py-1 m-1 border rounded cursor-pointer">
-      {number}
-    </li>
-  ));
+  const renderPageNumbers = pageNumbers.map((number) => {
+    // Jumlah halaman sebelum dan sesudah halaman saat ini yang akan ditampilkan
+    const pageNeighbours = 2;
+    const leftBound = currentPage - pageNeighbours;
+    const rightBound = currentPage + pageNeighbours;
+    const startPage = Math.max(2, leftBound);
+    const endPage = Math.min(pageNumbers.length - 1, rightBound);
+
+    if (number === 1 || number === pageNumbers.length || (number >= startPage && number <= endPage)) {
+      return (
+        <li key={number} id={number} onClick={() => setCurrentPage(number)} className="inline-block px-3 py-1 m-1 border rounded cursor-pointer">
+          {number}
+        </li>
+      );
+    } else if ((number === startPage - 1 && currentPage !== 1) || (number === endPage + 1 && currentPage !== pageNumbers.length)) {
+      return (
+        <li key={number} id={number} className="inline-block px-3 py-1 m-1 border rounded cursor-pointer">
+          ...
+        </li>
+      );
+    } else {
+      return null;
+    }
+  });
 
   return (
     <div className="container mx-auto px-4 bg-white p-6 rounded-lg shadow-md text-black">
@@ -104,6 +125,7 @@ const Transaction = () => {
           ))}
         </select>
         <input type="number" name="quantity" onChange={handleChange} placeholder="Quantity" className="border border-black p-2 rounded mr-2 bg-gray-200" value={transaction.quantity} />
+        <input type="date" name="transaction_date" onChange={handleChange} className="border border-black p-2 rounded mr-2 bg-gray-200" value={transaction.transaction_date} />
         <button type="submit" className="bg-black hover:bg-gray-800 text-white p-2 rounded">
           Submit
         </button>
@@ -138,7 +160,13 @@ const Transaction = () => {
         </table>
       </div>
       <ul id="page-numbers" className="flex justify-center mt-4">
+        <li onClick={() => setCurrentPage(1)} className="inline-block px-3 py-1 m-1 border rounded cursor-pointer">
+          First
+        </li>
         {renderPageNumbers}
+        <li onClick={() => setCurrentPage(pageNumbers.length)} className="inline-block px-3 py-1 m-1 border rounded cursor-pointer">
+          Last
+        </li>
       </ul>
     </div>
   );

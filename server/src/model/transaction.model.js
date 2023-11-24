@@ -1,15 +1,15 @@
 import db from "../db/db.js";
-import moment from "moment-timezone";
+// import moment from "moment-timezone";
 import { v4 } from "uuid";
 
 class TransactionModels {
   //Post add
-  async insert(item_id, quantity, total_price) {
+  async insert(item_id, quantity, transaction_date, total_price) {
     const newTransaction = {
       id: v4(),
       item_id,
       quantity,
-      transaction_date: moment().tz("Asia/Jakarta").format(),
+      transaction_date,
       total_price,
     };
     return await db.insert(newTransaction).into("transaction").returning("*"); //.returning

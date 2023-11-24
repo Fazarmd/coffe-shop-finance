@@ -4,11 +4,11 @@ import TransactionModels from "../../model/transaction.model.js";
 const models = new TransactionModels();
 
 async function addTransaction(req, res) {
-  const { item_id, quantity } = req.body;
+  const { item_id, quantity, transaction_date } = req.body;
   try {
     // Validasi data yang diterima
-    if (!item_id || !quantity) {
-      return res.status(400).json(responseError("Item ID and Quantity are required"));
+    if (!item_id || !quantity || !transaction_date) {
+      return res.status(400).json(responseError("Item ID, Date and Quantity are required"));
     }
 
     // Ambil harga item dari tabel items
@@ -18,7 +18,7 @@ async function addTransaction(req, res) {
     const total_price = item.price * quantity;
 
     // Simpan data transaksi
-    const data = await models.insert(item_id, quantity, total_price);
+    const data = await models.insert(item_id, quantity, transaction_date, total_price);
 
     // Kirim respon
     return res.status(201).json(responseOk("Success insert data", data));

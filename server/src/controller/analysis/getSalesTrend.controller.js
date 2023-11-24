@@ -5,17 +5,20 @@ const analysisModels = new AnalysisModels();
 
 async function getSalesTrend(req, res) {
   try {
-    const trendType = req.params.period;
+    const trendType = req.params.period; // "daily", "weekly", or "monthly"
     let salesTrendData;
 
     switch (trendType) {
       case "daily":
+        // Tampilkan data penjualan 7 hari terakhir
         salesTrendData = await analysisModels.dailySales();
         break;
       case "weekly":
+        // Tampilkan data penjualan 4 minggu terakhir
         salesTrendData = await analysisModels.weeklySales();
         break;
       case "monthly":
+        // Tampilkan data penjualan 12 bulan terakhir
         salesTrendData = await analysisModels.monthlySales();
         break;
       default:
